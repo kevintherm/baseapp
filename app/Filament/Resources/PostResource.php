@@ -36,6 +36,11 @@ class PostResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -162,7 +167,7 @@ class PostResource extends Resource
                                 Column::make('title'),
                                 Column::make('slug'),
                                 Column::make('content')->formatStateUsing(fn($state) => strip_tags($state))->width(60),
-                                Column::make('category.name'),
+                                Column::make('category.name')->heading('Category name'),
                                 Column::make('published_at')->formatStateUsing(fn($state) => $state ?? 'Not Published'),
                                 Column::make('updated_at')->heading('Last updated'),
                                 Column::make('created_at')->heading('Creation date')
@@ -182,7 +187,7 @@ class PostResource extends Resource
                                     Column::make('title'),
                                     Column::make('slug'),
                                     Column::make('content')->formatStateUsing(fn($state) => strip_tags($state))->width(60),
-                                    Column::make('category.name'),
+                                    Column::make('category.name')->heading('Category name'),
                                     Column::make('published_at')->formatStateUsing(fn($state) => $state ?? 'Not Published'),
                                     Column::make('updated_at')->heading('Last updated'),
                                     Column::make('created_at')->heading('Creation date')

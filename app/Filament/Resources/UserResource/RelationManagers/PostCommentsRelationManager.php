@@ -32,14 +32,8 @@ class PostCommentsRelationManager extends RelationManager
                     ->native(false)
                     ->searchable()
                     ->preload()
-                    ->live(true),
-
-                Select::make('user_id')
-                    ->relationship('user', 'name')
-                    ->required()
-                    ->native(false)
-                    ->searchable()
-                    ->preload(),
+                    ->live(true)
+                    ->columnSpanFull(),
 
                 Select::make('parent_id')
                     ->label('Replying To')

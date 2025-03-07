@@ -11,6 +11,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\View;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -33,6 +34,11 @@ class UserResource extends Resource
     protected static ?string $navigationGroup = 'User';
 
     protected static ?int $navigationSort = 1;
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 
     public static function form(Form $form): Form
     {

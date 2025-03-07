@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use Illuminate\View\View;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Support\ServiceProvider;
+use Filament\Support\Facades\FilamentView;
 
 class AppServiceProvider extends ServiceProvider
 {

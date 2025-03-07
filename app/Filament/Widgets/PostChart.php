@@ -27,11 +27,17 @@ class PostChart extends BaseModelChart
     protected function getColors(): array
     {
         return [
-            [],
+            [
+                'border' => Color::Pink[500],
+                'background' => Color::Pink[500],
+                'point' => Color::Pink[500],
+                'fill' => Color::Pink[500],
+            ],
             [
                 'border' => Color::Amber[500],
                 'background' => Color::Amber[500],
                 'point' => Color::Amber[500],
+                'fill' => Color::Amber[500],
             ],
         ];
     }

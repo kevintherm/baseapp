@@ -62,10 +62,12 @@ abstract class BaseModelChart extends ChartWidget
                     'borderColor' => "rgb({$colors['border']})",
                     'backgroundColor' => "rgba({$colors['background']}, 0.3)",
                     'pointBackgroundColor' => "rgba({$colors['point']})",
+                    'fillColor' => "rgba({$colors['fill']}, 0.3)"
                 ]);
             }
 
             $dataset['tension'] = 0.4;
+            $dataset['fill'] = isset($colors['fill']);
 
             $datasets[] = $dataset;
         }

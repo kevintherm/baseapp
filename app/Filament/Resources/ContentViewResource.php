@@ -63,6 +63,7 @@ class ContentViewResource extends Resource
                 //
             ])
             ->actions([
+                //
             ])
             ->headerActions([
                 ExportAction::make()
@@ -117,5 +118,10 @@ class ContentViewResource extends Resource
         return [
             'index' => Pages\ListContentViews::route('/'),
         ];
+    }
+
+    public static function canCreate(): bool
+    {
+       return false;
     }
 }

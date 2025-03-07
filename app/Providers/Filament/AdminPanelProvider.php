@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Models\Setting;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
@@ -65,7 +66,15 @@ class AdminPanelProvider extends PanelProvider
             ->colors(colors: [
                 'primary' => Helpers::getColorRgb('primary', 500),
             ])
+            ->brandName(Setting::retrieve('app_name', config('app.name')))
             ->font('Montserrat')
-            ->favicon(asset('favicon.ico'));
+            ->favicon(asset('favicon.ico'))
+            ->navigationGroups([
+                NavigationGroup::make('Blog'),
+                NavigationGroup::make('User'),
+                NavigationGroup::make('Other')
+                    ->collapsed()
+            ])
+            ->sidebarCollapsibleOnDesktop();
     }
 }

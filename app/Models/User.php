@@ -3,13 +3,15 @@
 namespace App\Models;
 
 use App\Role;
+use Filament\Panel;
 use App\Models\ContentView;
 use Illuminate\Notifications\Notifiable;
+use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     use HasFactory, Notifiable, SoftDeletes;
 
@@ -47,6 +49,11 @@ class User extends Authenticatable
     public function views()
     {
         return $this->hasMany(ContentView::class);
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $this->role === Role::Admin || $this->role === Role::Editor;
     }
 
 }

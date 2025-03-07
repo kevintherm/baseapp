@@ -54,12 +54,8 @@ class PostsRelationManager extends RelationManager
                             TextInput::make('slug')
                                 ->required()
                                 ->unique(),
-                        ]),
-                    Select::make('Authors')
-                        ->multiple()
-                        ->relationship('authors', 'name')
-                        ->preload()
-                        ->required(),
+                        ])
+                        ->columnSpanFull(),
                     TextInput::make('title')
                         ->required()
                         ->live(true)

@@ -77,11 +77,11 @@ abstract class BaseModelStats extends BaseWidget
             'value' => $currentCount,
             'icon' => $icon,
             'description' => sprintf("%.0f%% %s",  abs($percentageChange), $increased ? 'increase' : 'decrease'),
-            'color' => $showChart ? Color::{$increased ? 'Green' : 'Red'} : Color::Gray,
-            'descriptionIcon' => $showChart ? ($increased
+            'color' => ($showChart && $percentageChange != 0) ? Color::{$increased ? 'Green' : 'Red'} : Color::Gray,
+            'descriptionIcon' => ($showChart && $percentageChange != 0) ? ($increased
                 ? 'heroicon-o-arrow-trending-up'
                 : 'heroicon-o-arrow-trending-down') : 'heroicon-o-arrows-up-down',
-            'chart' => $showChart ? $dailyCounts : []
+            'chart' => ($showChart && $percentageChange != 0) ? $dailyCounts : []
         ];
     }
 
