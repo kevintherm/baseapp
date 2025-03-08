@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\TemplateResource\Pages\PageEditor;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Template;
@@ -31,10 +32,8 @@ class TemplateResource extends Resource
     {
         return $form
             ->schema([
-                FileUpload::make('image')
-                    ->label('Thumbnail')
-                    ->columnSpanFull(),
-                TextInput::make('name'),
+
+
             ]);
     }
 
@@ -42,12 +41,6 @@ class TemplateResource extends Resource
     {
         return $table
             ->columns([
-                ImageColumn::make('image')
-                    ->label('Thumbnail')
-                    ->extraImgAttributes(fn (): array => [
-                        'alt' => "Thumbnail not available",
-                    ]),
-
                 TextColumn::make('name')
                     ->formatStateUsing(fn($state) => ucwords($state))
                     ->searchable(),
@@ -60,7 +53,8 @@ class TemplateResource extends Resource
                 TernaryFilter::make('is_active')
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->url(fn($record) => route('page-editor', $record)),
             ])
             ->bulkActions([
                 //

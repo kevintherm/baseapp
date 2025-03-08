@@ -31,7 +31,7 @@ class Setting extends Model
     public function getIsCompleteAttribute()
     {
         $attributes = [
-            'app_name', 'app_description', 'app_logo'
+            'app_name', 'app_description', 'app_logo', 'app_favicon'
         ];
 
         foreach ($attributes as $attribute) {
@@ -43,12 +43,23 @@ class Setting extends Model
         return true;
     }
 
-    public static function retrieve(string $name, $fallback = null)
-    {
-        $st = self::first();
+        private static $instance;
 
-        if (!empty($st->$name)) return $st->$name;
+        public static function getInstance()
+        {
+            if (is_null(self::$instance)) {
+                self::$instance = self::first() ?: self::createDefault();
+            }
 
-        return $fallback;
-    }
+            return self::$instance;
+        }
+
+        public static function retrieve(string $name, $fallback = null, bool $storage_path = false)
+        {
+            $st = self::getInstance();
+
+            if (!empty($st->$name)) return $storage_path ? '/storage/' . $st->$name : $st->$name;
+
+            return $fallback;
+        }
 }

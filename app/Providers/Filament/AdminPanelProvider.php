@@ -62,13 +62,13 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->unsavedChangesAlerts()
             ->databaseTransactions()
-            ->spa()
+            // ->spa()
             ->colors(colors: [
                 'primary' => Helpers::getColorRgb('primary', 500),
             ])
             ->brandName(Setting::retrieve('app_name', config('app.name')))
             ->font('Montserrat')
-            ->favicon(asset('favicon.ico'))
+            ->favicon(Setting::retrieve('app_favicon') ? "/storage/" . Setting::retrieve('app_favicon') : asset('favicon.ico'))
             ->navigationGroups([
                 NavigationGroup::make('Blog'),
                 NavigationGroup::make('User'),

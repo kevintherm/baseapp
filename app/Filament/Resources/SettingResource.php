@@ -35,13 +35,15 @@ class SettingResource extends Resource
             ->schema([
                 FileUpload::make('app_logo')
                     ->disk('public')
-                    ->image()
-                    ->columnSpanFull(),
+                    ->image(),
+                FileUpload::make('app_favicon')
+                    ->disk('public')
+                    ->image(),
 
                 Section::make('App Information')
                     ->schema([
                         TextInput::make('app_name'),
-                        Textarea::make('app_description'),
+                        Textarea::make('app_description')
                     ])
                     ->collapsible(),
 

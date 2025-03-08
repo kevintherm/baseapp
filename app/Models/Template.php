@@ -12,13 +12,18 @@ class Template extends Model
 
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'features' => 'json'
+    ];
+
     public static function createDefault()
     {
         try {
             Template::create([
                 'name' => 'default',
-                'path' => Storage::disk('local')->path(config('themes.prefix') . '/default'),
+                'path' => 'default',
                 'is_active' => true,
+                'features' => ['home', 'about', 'contact']
             ]);
 
             return true;
@@ -35,8 +40,35 @@ class Template extends Model
         static::saving(function ($model) {
             if ($model->is_active) {
                 // Set all other rows' is_active to false
-                static::where('is_active', true)->update(['is_active' => false]);
+                static::where('is_active', true)->whereNot('id', $model->id)->update(['is_active' => false]);
             }
         });
+    }
+
+    public static function getActive()
+    {
+        return self::where('is_active', true)->first();
+    }
+
+    public function getView(string $view, string $subfolder = 'public'): string
+    {
+        return "{$this->path}/$subfolder/$view";
+    }
+
+    public function hasFeature($feature)
+    {
+        return in_array($feature, $this->features);
+    }
+
+    public function activate()
+    {
+        $this->is_active = true;
+        $this->save();
+    }
+
+    public function deactivate()
+    {
+        $this->is_active = false;
+        $this->save();
     }
 }
