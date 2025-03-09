@@ -40,10 +40,27 @@
         .gjs-block svg {
             width: 100%;
         }
+
+        .panel__top {
+            padding: 0;
+            width: 100%;
+            display: flex;
+            position: initial;
+            justify-content: center;
+            justify-content: space-between;
+        }
+
+        .panel__basic-actions {
+            position: initial;
+        }
     </style>
+    @vite('resources/js/app.js')
 </head>
 
 <body>
+    <div class="panel__top">
+        <div class="panel__basic-actions"></div>
+    </div>
     <div id="gjs">
         {!! $view !!}
     </div>
@@ -62,6 +79,41 @@
             },
             plugins: ['grapesjs-tailwind'],
         });
+
+        editor.Panels.addPanel({
+            id: 'panel-top',
+            el: '.panel__top',
+        });
+        editor.Panels.addPanel({
+            id: 'basic-actions',
+            el: '.panel__basic-actions',
+            buttons: [{
+                id: 'save',
+                className: 'btn-save',
+                label: 'Save',
+                command: 'save-template',
+            }],
+        });
+
+        const commands = editor.Commands;
+            commands.add('save-template', (editor) => {
+                const html = editor.getHtml();
+                const css = editor.getCss();
+                const js = editor.getJs();
+
+                axios.post(window.location.href, {
+                    html: html,
+                    css: css,
+                    js: js
+                }).then(response => {
+                    alert("Saved!");
+                    window.location.href = '/admin/templates';
+                }).catch(error => {
+                    alert("Error saving template!");
+                });
+
+            });
+        </script>
     </script>
 </body>
 

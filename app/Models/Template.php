@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\AsCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -50,9 +51,15 @@ class Template extends Model
         return self::where('is_active', true)->first();
     }
 
-    public function getView(string $view, string $subfolder = 'public'): string
+    public function getView(string $view, string $subfolder = 'public')
     {
-        return "{$this->path}/$subfolder/$view";
+        $viewExists = Template::getActive()->routes;
+
+        if ($viewExists && in_array($view, $viewExists)) {
+            return "{$this->path}/$subfolder/{$view}";
+        }
+
+        return null;
     }
 
     public function hasFeature($feature)

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Setting;
 use App\Models\Template;
 use App\Role;
 use Illuminate\Contracts\Support\Renderable;
@@ -27,18 +28,49 @@ class TemplateController extends Controller
         ]);
     }
 
-    public function home(): View
+    public function savePageEditor(Request $request, Template $template)
     {
-        return view($this->template->getView('home'));
+        $request->validate([
+            'html' => 'required|string',
+            'css' => 'nullable|string',
+            'js' => 'nullable|string',
+        ]);
+
+        $html = $request->html;
+        $css = $request->css;
+        $js = $request->js;
+        $pageTitle = Setting::retrieve('app_name', config('app.name'));
+
+        $formattedHtml = "<!DOCTYPE html>
+        <html lang=\"en\">
+        <head>
+            <meta charset=\"UTF-8\">
+            <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+            <title>$pageTitle</title>
+            <style>
+            $css
+            </style>
+        </head>
+        <body>
+            $html
+            <script>
+            $js
+            </script>
+        </body>
+        </html>";
+
+        $filePath = $template->getView('home.blade.php');
+        $filePath = "./../resources/views/$filePath";
+        file_put_contents($filePath, $formattedHtml);
+
+        return route('filament.admin.resources.templates.index');
     }
 
-    public function about()
+    public function routes($path)
     {
+        $view = $this->template->getView($path);
+        if (!$view) abort(404);
 
-    }
-
-    public function contact()
-    {
-
+        return view($view);
     }
 }
