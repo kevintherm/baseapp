@@ -1,7 +1,7 @@
 <?php
 
+use App\Models\Template;
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
@@ -12,13 +12,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('templates', function (Blueprint $table) {
+        Schema::create('template_pages', function (Blueprint $table) {
             $table->id();
+            $table->foreignIdFor(Template::class);
             $table->string('name');
-            $table->string('path');
-            $table->boolean('is_active')->default(false);
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('templates');
+        Schema::dropIfExists('template_pages');
     }
 };

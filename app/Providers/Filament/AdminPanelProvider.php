@@ -66,9 +66,9 @@ class AdminPanelProvider extends PanelProvider
             ->colors(colors: [
                 'primary' => Helpers::getColorRgb('primary', 500),
             ])
-            ->brandName(Setting::retrieve('app_name', config('app.name')))
+            ->brandName(config('app.name'))
             ->font('Montserrat')
-            ->favicon(Setting::retrieve('app_favicon') ? "/storage/" . Setting::retrieve('app_favicon') : asset('favicon.ico'))
+            ->favicon(asset('/assets/favicon.ico'))
             ->navigationGroups([
                 NavigationGroup::make('Blog'),
                 NavigationGroup::make('User'),

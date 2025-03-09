@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Setting;
 use App\Models\Template;
+use App\Models\TemplatePage;
 use App\Role;
 use Illuminate\Contracts\Support\Renderable;
-use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
+use View;
 
 class TemplateController extends Controller
 {
@@ -20,57 +21,76 @@ class TemplateController extends Controller
         $this->template = Template::where('is_active', true)->first();
     }
 
-    public function pageEditor(Template $template)
+    public function pageEditor(Template $template, TemplatePage $page)
     {
         return view('filament.pages.page-editor', [
             'template' => $template,
-            'view' => Blade::render($template->getView('home'))
+            'page' => $page,
+            'view' => $template->getHtml($page->name)
         ]);
     }
 
-    public function savePageEditor(Request $request, Template $template)
+    public function savePageEditor(Request $request, Template $template, TemplatePage $page)
     {
         $request->validate([
-            'html' => 'required|string',
-            'css' => 'nullable|string',
-            'js' => 'nullable|string',
+            'html' => ['required', 'string'],  // Limit size
+            'css' => ['nullable', 'string'],
+            'js' => ['nullable', 'string'],
         ]);
 
-        $html = $request->html;
-        $css = $request->css;
-        $js = $request->js;
-        $pageTitle = Setting::retrieve('app_name', config('app.name'));
+        // Sanitize inputs
+        $html = strip_tags($request->html, [
+            'div', 'p', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+            'ul', 'ol', 'li', 'a', 'img', 'table', 'tr', 'td', 'th',
+            'strong', 'em', 'b', 'i', 'br', 'blockquote', 'pre', 'code',
+            'iframe', 'section', 'article', 'header', 'footer', 'nav',
+            'form', 'input', 'textarea', 'button', 'select', 'option',
+            'label', 'fieldset', 'legend', 'datalist', 'optgroup',
+            'video', 'audio', 'source', 'track', 'canvas', 'svg', 'path',
+            'g', 'line', 'rect', 'circle', 'ellipse', 'polygon', 'polyline',
+            'text'
+        ]);
 
-        $formattedHtml = "<!DOCTYPE html>
-        <html lang=\"en\">
-        <head>
-            <meta charset=\"UTF-8\">
-            <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
-            <title>$pageTitle</title>
-            <style>
-            $css
-            </style>
-        </head>
-        <body>
-            $html
-            <script>
-            $js
-            </script>
-        </body>
-        </html>";
+        // Only allow safe CSS properties
+        $css = preg_replace('/expression|import|behavior|javascript|eval/i', '', $request->css);
 
-        $filePath = $template->getView('home.blade.php');
-        $filePath = "./../resources/views/$filePath";
-        file_put_contents($filePath, $formattedHtml);
+        // Basic JS validation - you may want to use a JS sanitizer library
+        $js = preg_replace('/(eval|exec|system|passthru|shell_exec)/i', '', $request->js);
+
+        $template->setHtml(
+            page: $page->name,
+            content: $html
+        );
+
+        $template->setCss(
+            page: $page->name,
+            content: $css
+        );
 
         return route('filament.admin.resources.templates.index');
     }
 
+    public function assetManager(Request $request)
+    {
+        if ($request->hasFile('files')) {
+            $file = $request->file('files')[0];
+            $path = $file->store('uploads', 'public');
+
+            return response()->json([
+                'data' => [
+                    'src' => asset("storage/{$path}"),
+                ],
+            ]);
+        }
+
+        return response()->json(['error' => 'No file uploaded'], 400);
+    }
+
     public function routes($path)
     {
-        $view = $this->template->getView($path);
-        if (!$view) abort(404);
+        $page = $this->template->hasPage($path);
+        if (!$page) abort(404);
 
-        return view($view);
+        return View::make(...$this->template->getViewData($path));
     }
 }

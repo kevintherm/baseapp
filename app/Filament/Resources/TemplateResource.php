@@ -3,7 +3,9 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TemplateResource\Pages\PageEditor;
+use App\Filament\Resources\TemplateResource\RelationManagers\PagesRelationManager;
 use Filament\Forms;
+use Filament\Forms\Components\Checkbox;
 use Filament\Tables;
 use App\Models\Template;
 use Filament\Forms\Form;
@@ -32,9 +34,14 @@ class TemplateResource extends Resource
     {
         return $form
             ->schema([
+                TextInput::make('name')
+                    ->disabled(true),
 
+                Checkbox::make('is_active')
+                    ->disabled(true)
 
-            ]);
+            ])
+            ->columns(1);
     }
 
     public static function table(Table $table): Table
@@ -54,7 +61,6 @@ class TemplateResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
-                    ->url(fn($record) => route('page-editor', $record)),
             ])
             ->bulkActions([
                 //
@@ -65,10 +71,23 @@ class TemplateResource extends Resource
     {
         return [
             'index' => Pages\ListTemplates::route('/'),
+            'edit' => Pages\EditTemplate::route('{record}/edit')
+        ];
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            PagesRelationManager::class
         ];
     }
 
     public static function canCreate(): bool
+    {
+        return false;
+    }
+
+    public static function canDelete($record): bool
     {
         return false;
     }
